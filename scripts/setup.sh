@@ -10,6 +10,6 @@ source .venv/bin/activate
 
 echo "==> Upgrading pip + installing dependencies"
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install --timeout=60 -r requirements.txt
 
 echo "==> Done. Activate the venv with: source .venv/bin/activate"
