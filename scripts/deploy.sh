@@ -9,7 +9,8 @@ scarb build
 
 # Deploy ShieldedPool
 echo "Deploying ShieldedPool..."
-DEPLOY_RESULT=$(sncast deploy --contract-name ShieldedPool --rpc-url $STARKNET_RPC_URL --account $ACCOUNT_ADDRESS --private-key $PRIVATE_KEY)
+DEPLOY_RESULT=$(sncast deploy --contract-name ShieldedPool --account $ACCOUNT_ADDRESS --private-key $PRIVATE_KEY)
+
 
 # Extract contract address
 SHIELDED_POOL_ADDRESS=$(echo $DEPLOY_RESULT | grep -oP 'contract_address: \K[0-9a-fx]+')
