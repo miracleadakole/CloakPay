@@ -1,24 +1,22 @@
-#[starknet::contract]
+use starknet::ContractAddress;
 
 #[starknet::interface]
 pub trait IShieldedPool<TContractState> {
-        fn deposit(ref self: TContractState, amount: u256);
-        fn withdraw(ref self: TContractState, amount: u256);
-        fn get_deposit(self: @TContractState, user: ContractAddress) -> u256;
-        fn get_total_deposits(self: @TContractState) -> u256;
+    fn deposit(ref self: TContractState, amount: u256);
+    fn withdraw(ref self: TContractState, amount: u256);
+    fn get_deposit(self: @TContractState, user: ContractAddress) -> u256;
+    fn get_total_deposits(self: @TContractState) -> u256;
 }
 
+#[starknet::contract]
 mod ShieldedPool {
     use starknet::{ContractAddress, get_caller_address};
-    use starknet::storage::{Map, StorageMapReadAccess, StorageMapWriteAccess, StoragePointerReadAccess, StoragePointerWriteAccess};
-
-    ##[starknet::interface]
-    #trait IShieldedPool<TContractState> {
-        #fn deposit(ref self: TContractState, amount: u256);
-        #fn withdraw(ref self: TContractState, amount: u256);
-        #fn get_deposit(self: @TContractState, user: ContractAddress) -> u256;
-        #fn get_total_deposits(self: @TContractState) -> u256;
-    }
+    // This is crucial for the contract to see the interface above it
+    use super::IShieldedPool;
+    use starknet::storage::{
+        Map, StorageMapReadAccess, StorageMapWriteAccess, 
+        StoragePointerReadAccess, StoragePointerWriteAccess
+    };
 
     #[storage]
     struct Storage {
@@ -64,6 +62,7 @@ mod ShieldedPool {
             let caller = get_caller_address();
             let current_deposit = self.deposits.read(caller);
             assert(current_deposit >= amount, 'Insufficient balance');
+            
             let new_deposit = current_deposit - amount;
             self.deposits.write(caller, new_deposit);
 
