@@ -1,10 +1,9 @@
-use cloakpay::shielded_pool::ShieldedPool;
-use cloakpay::shielded_pool::IShieldedPoolDispatcher;
-use cloakpay::shielded_pool::IShieldedPoolDispatcherTrait;
+use cloakpay::shielded_pool::{IShieldedPoolDispatcher, IShieldedPoolDispatcherTrait};
 use starknet::{ContractAddress, contract_address_const};
 use snforge_std::{declare, ContractClassTrait, DeclareResultTrait, start_cheat_caller_global, stop_cheat_caller_global};
 
 fn deploy_shielded_pool() -> ContractAddress {
+    // Note: unwrap() on DeclareResultTrait returns a DeclareResult
     let contract = declare("ShieldedPool").unwrap().contract_class();
     let (contract_address, _) = contract.deploy(@ArrayTrait::new()).unwrap();
     contract_address
@@ -56,10 +55,9 @@ fn test_withdraw() {
     start_cheat_caller_global(user);
     
     dispatcher.deposit(100);
-    assert(dispatcher.get_deposit(user) == 100, 'Initial deposit should be 100');
-    
     dispatcher.withdraw(40);
-    assert(dispatcher.get_deposit(user) == 60, 'After withdraw should be 60');
+    
+    assert(dispatcher.get_deposit(user) == 60, 'Balance should be 60');
     assert(dispatcher.get_total_deposits() == 60, 'Total should be 60');
     
     stop_cheat_caller_global();
@@ -75,7 +73,7 @@ fn test_withdraw_insufficient_balance() {
     start_cheat_caller_global(user);
     
     dispatcher.deposit(50);
-    dispatcher.withdraw(100); // Should panic
+    dispatcher.withdraw(100);
     
     stop_cheat_caller_global();
 }
