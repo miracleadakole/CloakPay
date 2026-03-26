@@ -8,9 +8,17 @@ source .env
 scarb build
 
 # Deploy ShieldedPool
-echo "Deploying ShieldedPool..."
-DEPLOY_RESULT=$(sncast deploy --contract-name ShieldedPool --account $ACCOUNT_ADDRESS --private-key $PRIVATE_KEY)
+#echo "Deploying ShieldedPool..."
+#DEPLOY_RESULT=$(sncast deploy --contract-name ShieldedPool --account $ACCOUNT_ADDRESS --private-key $PRIVATE_KEY)
+# 1. Declare the contract (Uploads the code)
+echo "Declaring ShieldedPool..."
+sncast --url $STARKNET_RPC_URL --account $ACCOUNT_ADDRESS --private-key $PRIVATE_KEY declare --contract-name ShieldedPool
 
+# 2. Deploy the contract (Creates the instance)
+echo "Deploying ShieldedPool..."
+DEPLOY_RESULT=$(sncast --url $STARKNET_RPC_URL --account $ACCOUNT_ADDRESS --private-key $PRIVATE_KEY deploy --contract-name ShieldedPool)
+
+echo $DEPLOY_RESULT
 
 # Extract contract address
 SHIELDED_POOL_ADDRESS=$(echo $DEPLOY_RESULT | grep -oP 'contract_address: \K[0-9a-fx]+')
