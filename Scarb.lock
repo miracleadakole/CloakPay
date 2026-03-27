@@ -4,12 +4,3 @@ version = 1
 [[package]]
 name = "cloakpay"
 version = "0.1.0"
-dependencies = [
- "snforge_std",
-]
-
-[[package]]
-name = "snforge_std"
-version = "0.27.0"
-source = "registry+https://scarbs.xyz/"
-checksum = "sha256:695b6a5fe773c48e16c655730e8434f26780327be3d782046273f8190779d2a1"
