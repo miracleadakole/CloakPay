@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2024_07"
 
 [dependencies]
-starknet = "2.9.2"
+starknet = "2.8.2"
 # Added this for test runners and cheatcodes (like start_cheat_caller)
-snforge_std = "0.50.0" 
+snforge_std = "0.31.0" 
 
 [[target.starknet-contract]]
 sierra = true
@@ -18,4 +18,4 @@ name = "cloakpay_tests"
 
 [dev-dependencies]
 # Ensures snforge is available specifically for the test target
-snforge_std = "0.50.0"
+snforge_std = "0.31.0"
