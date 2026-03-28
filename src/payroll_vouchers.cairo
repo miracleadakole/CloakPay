@@ -1,13 +1,13 @@
 use starknet::ContractAddress;
 
-// 1. Move the interface OUTSIDE the mod block
-// 2. Add 'pub' so it's visible to the rest of the project
+
 #[starknet::interface]
 pub trait IPayrollVouchers<TContractState> {
     fn create_voucher(ref self: TContractState, employee: ContractAddress, amount: u256);
     fn claim_voucher(ref self: TContractState, voucher_id: u256);
     fn get_voucher_amount(self: @TContractState, voucher_id: u256) -> u256;
     fn is_claimed(self: @TContractState, voucher_id: u256) -> bool;
+    fn get_employer(self: @TContractState) -> ContractAddress; // Added for transparency
 }
 
 #[starknet::contract]
@@ -19,6 +19,7 @@ mod PayrollVouchers {
 
     #[storage]
     struct Storage {
+        employer: ContractAddress,
         voucher_count: u256,
         voucher_employee: Map<u256, ContractAddress>,
         voucher_amount: Map<u256, u256>,
@@ -46,9 +47,19 @@ mod PayrollVouchers {
         amount: u256,
     }
 
+    // Set the employer at deployment
+    #[constructor]
+    fn constructor(ref self: ContractState, employer_address: ContractAddress) {
+        self.employer.write(employer_address);
+        self.voucher_count.write(0);
+    }
+
     #[abi(embed_v0)]
     impl PayrollVouchersImpl of IPayrollVouchers<ContractState> {
         fn create_voucher(ref self: ContractState, employee: ContractAddress, amount: u256) {
+            let caller = get_caller_address();
+            assert(caller == self.employer.read(), 'Only employer can create');
+            
             let voucher_id = self.voucher_count.read() + 1;
             self.voucher_count.write(voucher_id);
 
@@ -79,6 +90,10 @@ mod PayrollVouchers {
 
         fn is_claimed(self: @ContractState, voucher_id: u256) -> bool {
             self.claimed.read(voucher_id)
+        }
+
+        fn get_employer(self: @ContractState) -> ContractAddress {
+            self.employer.read()
         }
     }
 }

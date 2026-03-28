@@ -42,10 +42,17 @@ mod ShieldedPool {
         user: ContractAddress,
         amount: u256,
     }
+    
+    #[constructor]
+    fn constructor(ref self: ContractState) {
+        self.total_deposits.write(0);
+    }
 
     #[abi(embed_v0)]
     impl ShieldedPoolImpl of IShieldedPool<ContractState> {
         fn deposit(ref self: ContractState, amount: u256) {
+            assert(amount > 0, 'Amount must be positive'); // Added safety check
+
             let caller = get_caller_address();
             let current_deposit = self.deposits.read(caller);
             let new_deposit = current_deposit + amount;
@@ -61,6 +68,7 @@ mod ShieldedPool {
         fn withdraw(ref self: ContractState, amount: u256) {
             let caller = get_caller_address();
             let current_deposit = self.deposits.read(caller);
+            
             assert(current_deposit >= amount, 'Insufficient balance');
             
             let new_deposit = current_deposit - amount;
